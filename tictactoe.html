@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tic Tac Toe</title>
+        
+        <style>
+            * {
+                font-family: sans-serif; 
+            }
+            
+            
+            #gameTable {
+                width: 300px; 
+                height: 300px; 
+                margin: auto; 
+                display: none; 
+                opacity: 0; 
+                transition: opacity 3s; 
+            }
+            
+            #gameTable table, #gameTable table td {
+                border: 1px solid #c0c0c0; 
+                border-collapse: collapse; 
+                
+            } 
+            
+            #gameTable table td {
+                width: 100px; 
+                height: 100px; 
+                font-size: 60px; 
+                text-align: center; 
+                vertical-align: middle; 
+                opacity: 0; 
+                transition: opacity 3s; 
+            }
+            
+            #mainContainer {
+                width: 300px; 
+                height: 300px; 
+                margin: auto; 
+                border: 1px solid #c0c0c0; 
+                text-align: center; 
+                padding: 10px; 
+                display: block; 
+                opacity: 1; 
+                transition: opacity 3s; 
+            }
+            
+            #startGame {
+                width: 300px; 
+                height: 300px; 
+                margin: auto; 
+                border: 1px solid #c0c0c0; 
+                text-align: center; 
+                padding: 10px; 
+                display: none; 
+                opacity: 0; 
+                transition: opacity 3s; 
+            }
+            
+            #footer {
+                color: #666; 
+            }
+            
+            #mainContainer button, #startGame button, #gameTable button {
+                padding: 10px; 
+                font-weight: bold; 
+                color: white; 
+                background-color: #0b0; 
+                border-radius: 10px; 
+            }
+            
+            #mainContainer button:hover, #startGame button, #gameTable button {
+                background-color: #0a0; 
+            }
+            
+            #gameTable button {
+                display: none; 
+            }
+            
+        </style>
+    
+    </head>
+
+    <body>
+    
+        <div id="gameTable">
+            <table>
+                <tr>
+                    <td id="t11" onclick="xo(1,1)"></td>
+                    <td id="t12" onclick="xo(1,2)"></td>
+                    <td id="t13" onclick="xo(1,3)"></td>
+                </tr>
+                <tr>
+                    <td id="t21" onclick="xo(2,1)"></td>
+                    <td id="t22" onclick="xo(2,2)"></td>
+                    <td id="t23" onclick="xo(2,3)"></td>
+                </tr>
+                <tr>
+                    <td id="t31" onclick="xo(3,1)"></td>
+                    <td id="t32" onclick="xo(3,2)"></td>
+                    <td id="t33" onclick="xo(3,3)"></td>
+                </tr>
+            </table>
+            
+            <h1 id="result" style="text-align: center;"></h1><br>
+            
+            <button onclick="restart()" id="restartButton">Play again</button>
+            
+        </div>
+        
+        <div id="mainContainer">
+            <h1>Tic Tac Toe</h1>
+            
+            <br><br><br>
+            
+            <button id="startButton" onclick="initialize()">Start game</button> 
+            
+            <br><br><br>
+            
+            <div id="footer">
+                &#68;&#101;&#118;&#101;&#108;&#111;&#112;&#101;&#100;&#32;&#98;&#121;&#32;&#8706;&#118;&#105;&#99;&#47;&#8706;&#116;&#111;&#114;
+            </div>
+        
+        </div>
+        
+        
+        
+        <div id="startGame">
+            
+            <h1>Select your marker</h1><br>
+                
+            <div style="text-align: left; margin-left: 20px; ">
+                <input type="radio" name="firstPlay" value="x" id="x" checked>X (You play first)<br><br>
+                <input type="radio" name="firstPlay" value="o" id="o">O <br><br>
+                <input type="radio" name="firstPlay" value="xo" id="xo">Random<br><br>
+            </div>
+                
+            <button onclick="begin()">Begin</button>
+        
+        </div>
+        
+        
+        <script> 
+            var comp = 0, gameCounter, humanMarker, compMarker, gameState = ["","","","","","","","",""], move; 
+            
+            var mainContainer = document.getElementById("mainContainer"); 
+            var startGame = document.getElementById("startGame"); 
+            var gameTable = document.getElementById("gameTable"); 
+            var result = document.getElementById("result"); 
+            var restartButton = document.getElementById("restartButton"); 
+            
+            
+            
+            function initialize() {
+                mainContainer.style.opacity = "0"; 
+                mainContainer.style.display = "none"; 
+                startGame.style.display = "block"; 
+                startGame.style.opacity = "1"; 
+            }
+            
+            function begin() {
+                if (document.getElementById("x").checked) {comp = 0; }
+                else if (document.getElementById("o").checked) {comp = 1; }
+                else {comp = Math.floor(Math.random() * 2); }
+                 
+                
+                startGame.style.opacity = "0"; 
+                startGame.style.display = "none"; 
+                gameTable.style.display = "block"; 
+                gameTable.style.opacity = "1"; 
+                start(); 
+            }
+            
+            
+            
+            function start() {
+                gameCounter = comp ? 0 : 1; 
+                humanMarker = comp ? "O" : "X"; 
+                compMarker = comp ? "X" : "O";  
+                
+                if (comp) {
+                    xo(Math.ceil(Math.random() * 3), Math.ceil(Math.random() * 3)); 
+                }
+            }
+            
+            
+            function xo(a,b) {
+                var marker, arrayIndex, x, y; 
+                if (!(document.getElementById("t" + a + b).innerHTML)) {
+                    
+                    if ((win(gameState) == 1) || (win(gameState) == -1)) {return; }
+                    
+                    marker = (gameCounter % 2) ? humanMarker : compMarker; 
+                    arrayIndex = (3 * a) + b - 4; 
+                    gameState[arrayIndex] = marker; 
+                    document.getElementById("t" + a + b).style.backgroundColor = "#eee"; 
+                    document.getElementById("t" + a + b).innerHTML = marker; 
+                    document.getElementById("t" + a + b).style.opacity = "1"; 
+                    
+                    if (win(gameState) == -1) {
+                        result.innerHTML = "You win!"; 
+                        restartButton.style.display = "inline"; 
+                    }
+                    else if (win(gameState) == 1) {
+                        result.innerHTML = "Computer wins!"; 
+                        restartButton.style.display = "inline"; 
+                    }
+                    else if ((win(gameState) == 0) && (gameCounter == (9 - comp))) {
+                        result.innerHTML = "Draw!"; 
+                        restartButton.style.display = "inline"; 
+                    }
+                    else {
+                        gameCounter++; 
+                        if (!(gameCounter % 2)) {
+                            minimax(gameState,gameCounter); 
+                            x = ((move - (move % 3)) / 3) + 1; 
+                            y = (move % 3) + 1; 
+                            xo(x, y); 
+                        }
+                    }
+                    
+                }
+                
+               
+            }
+            
+            function restart() {
+                gameCounter = comp ? 0 : 1; 
+                gameState = ["","","","","","","","",""]; 
+                
+                for (var i = 1; i <= 3; i++) {
+                    for (var j = 1; j <= 3; j++) {
+                        document.getElementById("t" + i + j).style.backgroundColor = "#fff"; 
+                        document.getElementById("t" + i + j).innerHTML = ""; 
+                        document.getElementById("t" + i + j).style.opacity = "0"; 
+                    }
+                }
+                
+                result.innerHTML = ""; 
+                restartButton.style.display = "none"; 
+                
+                start(); 
+            }
+            
+            
+            function minimax(gameArray, game_counter) {
+                var currentArray = [], marker, newArray = [], counter = game_counter, minMaxArray = [], minMax = 0, min, max, y00 = -1, z00; 
+                marker = (counter % 2) ? humanMarker : compMarker; 
+                
+                if (gameArray[4] == "") {
+                    move = 4; 
+                    return; 
+                }
+                
+                if ((gameArray[4] == humanMarker) && (game_counter == 2)) {
+                    move = 0; 
+                    return; 
+                }
+                
+                
+                for (var x in gameArray) {
+                    currentArray.push(gameArray[x]); 
+                }
+                
+                
+                for (var i = 0; i < 9; i++) {
+                    if (currentArray[i] != "") {continue; } 
+                    else {
+                        newArray.push(placeMarker(currentArray,i,marker)); 
+                    }
+                }
+                
+                
+                
+                for (var y in newArray) {
+                    if (win(newArray[y]) == 0) {
+                        if (gameCounter > (9 - comp)) {return; }
+                        else if (counter == (9 - comp)) {minMaxArray[y] = 0; }
+                        else {minMaxArray[y] = minimax(newArray[y],counter + 1); }
+                    }
+                    
+                    else {
+                        minMaxArray[y] = win(newArray[y]); 
+                    }
+                    
+                }
+                
+                
+                for (var z in minMaxArray) {
+                    if (z == 0) {
+                        min = minMaxArray[0]; 
+                        max = minMaxArray[0]; 
+                    }   
+                    
+                    else {
+                        if (minMaxArray[z] >= max) {max = minMaxArray[z]; }
+                        if (minMaxArray[z] <= min) {min = minMaxArray[z]; }
+                    }
+                    
+                }
+                
+                minMax = (counter % 2) ? min : max; 
+                
+                for (var z0 in minMaxArray) {
+                    if (minMaxArray[z0] == minMax) {
+                        z00 = z0; 
+                        break; 
+                    }
+                }
+                
+                for (var y0 in gameArray) {
+                    if (gameArray[y0] == "") {y00++; }
+                    if (y00 == z00) {
+                        move = y0; 
+                        break; 
+                    }
+                }
+                
+                for (var k = 0; k < 9; k++) {
+                    if (currentArray[k] != "") {continue; } 
+                    
+                    if (win(placeMarker(currentArray,k,marker)) == 1) {
+                        move = k; 
+                        break; 
+                    } 
+                }
+                
+                
+                
+                return minMax; 
+                
+            }
+            
+            
+            function win(gameArray) {
+                var humanWins = ((gameArray[0] == humanMarker) && (gameArray[3] == humanMarker) && (gameArray[6] == humanMarker)) || ((gameArray[1] == humanMarker) && (gameArray[4] == humanMarker) && (gameArray[7] == humanMarker)) || ((gameArray[2] == humanMarker) && (gameArray[5] == humanMarker) && (gameArray[8] == humanMarker)) || ((gameArray[0] == humanMarker) && (gameArray[1] == humanMarker) && (gameArray[2] == humanMarker)) || ((gameArray[3] == humanMarker) && (gameArray[4] == humanMarker) && (gameArray[5] == humanMarker)) || ((gameArray[6] == humanMarker) && (gameArray[7] == humanMarker) && (gameArray[8] == humanMarker)) || ((gameArray[0] == humanMarker) && (gameArray[4] == humanMarker) && (gameArray[8] == humanMarker)) || ((gameArray[2] == humanMarker) && (gameArray[4] == humanMarker) && (gameArray[6] == humanMarker)); 
+                
+                var compWins = ((gameArray[0] == compMarker) && (gameArray[3] == compMarker) && (gameArray[6] == compMarker)) || ((gameArray[1] == compMarker) && (gameArray[4] == compMarker) && (gameArray[7] == compMarker)) || ((gameArray[2] == compMarker) && (gameArray[5] == compMarker) && (gameArray[8] == compMarker)) || ((gameArray[0] == compMarker) && (gameArray[1] == compMarker) && (gameArray[2] == compMarker)) || ((gameArray[3] == compMarker) && (gameArray[4] == compMarker) && (gameArray[5] == compMarker)) || ((gameArray[6] == compMarker) && (gameArray[7] == compMarker) && (gameArray[8] == compMarker)) || ((gameArray[0] == compMarker) && (gameArray[4] == compMarker) && (gameArray[8] == compMarker)) || ((gameArray[2] == compMarker) && (gameArray[4] == compMarker) && (gameArray[6] == compMarker)); 
+                
+                if (humanWins) {return -1; }
+                else if (compWins) {return 1; }
+                else {return 0; }
+                
+            }
+            
+            function placeMarker(gameArray, index, marker) {
+                var currentArray = []; 
+                for (var x in gameArray) {
+                    currentArray.push(gameArray[x]); 
+                }
+                
+                currentArray[index] = marker; 
+                return currentArray; 
+            }
+        
+        </script>
+
+    </body>
+    
+</html>
